@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_cards(query):
-    rs = requests.get("https://api.bloodlibrary.info/api/search", params={'name': query})
+    rs = requests.get("https://api.vtesdecks.com/1.0/cards/search", params={'query': query})
     if rs.status_code != 200:
         raise Exception(f"[${rs.status_code}]$ {rs.text}")
 
@@ -19,12 +19,12 @@ def get_cards(query):
 
 
 def build_query_result(card):
-    available_sets = list(filter(lambda s: s['image'], card['publish_sets']))
-    available_sets.sort(key=lambda s: s['set_id'], reverse=True)
+    card_id = card['id']
+    image_url = f"https://cdn.vtesdecks.com/img/cards/{card_id}.jpg"
     return InlineQueryResultPhoto(id=uuid4(),
                                   title=card['name'],
-                                  thumb_url=available_sets[0]['image'],
-                                  photo_url=available_sets[0]['image'])
+                                  thumb_url=image_url,
+                                  photo_url=image_url)
 
 
 def handle_query(update, context):
